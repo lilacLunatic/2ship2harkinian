@@ -8167,6 +8167,14 @@ s32 Player_ActionChange_11(Player* this, PlayState* play) {
                     if (!Player_IsGoronOrDeku(this)) {
                         Player_SetModelsForHoldingShield(this);
                         anim = D_8085BE84[PLAYER_ANIMGROUP_19][this->modelAnimType];
+
+                        // FIXME: cursor reset on shield pull
+                        if (CVarGetInteger("gEnhancements.Camera.Mouse.Enabled", 0) && Mouse_IsCaptured()) {
+                            u32 width = OTRGetCurrentWidth();
+                            u32 height = OTRGetCurrentHeight();
+                            Mouse_SetCursorPos(width / 2, height / 2);
+                        }
+                        //
                     } else {
                         anim = (this->transformation == PLAYER_FORM_DEKU) ? &gPlayerAnim_pn_gurd
                                                                           : &gPlayerAnim_clink_normal_defense_ALL;
