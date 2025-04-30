@@ -600,6 +600,24 @@ void BenMenu::AddEnhancements() {
                      .Min(0.1f)
                      .Max(3.0f));
 
+    path.column = 3;
+    AddWidget(path, "Mouse", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Mouse Enabled", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Camera.Mouse.Enabled")
+        .Options(CheckboxOptions().DefaultValue(false));
+    AddWidget(path, "Mouse Shielding Enabled", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Mouse.Shielding.Enabled")
+        .Options(CheckboxOptions().DefaultValue(false))
+        .PreFunc([](WidgetInfo& info) {
+            info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_MOUSE_OFF).active;
+        });
+    AddWidget(path, "Mouse Quickspin", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Mouse.Quickspin.Enable")
+        .Options(CheckboxOptions().DefaultValue(false))
+        .PreFunc([](WidgetInfo& info) {
+            info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_MOUSE_OFF).active;
+        });
+
     path = { "Enhancements", "Cheats", 1 };
     AddSidebarEntry("Enhancements", "Cheats", 3);
     AddWidget(path, "Infinite Health", WIDGET_CVAR_CHECKBOX)
@@ -1554,6 +1572,12 @@ void BenMenu::InitElement() {
         { DISABLE_FOR_FREE_LOOK_OFF,
           { [](disabledInfo& info) -> bool { return !CVarGetInteger("gEnhancements.Camera.FreeLook.Enable", 0); },
             "Free Look is Disabled" } },
+        { DISABLE_FOR_MOUSE_ON,
+          { [](disabledInfo& info) -> bool { return CVarGetInteger("gEnhancements.Camera.Mouse.Enabled", 0); },
+            "Mouse is Enabled" } },
+        { DISABLE_FOR_MOUSE_OFF,
+          { [](disabledInfo& info) -> bool { return !CVarGetInteger("gEnhancements.Camera.Mouse.Enabled", 0); },
+            "Mouse is Disabled" } },
         { DISABLE_FOR_GYRO_OFF,
           { [](disabledInfo& info) -> bool {
                return !CVarGetInteger("gEnhancements.Camera.FirstPerson.GyroEnabled", 0);

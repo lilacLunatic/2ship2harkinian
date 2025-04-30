@@ -238,6 +238,7 @@ typedef enum {
     VB_START_JUMPSLASH,
     VB_SETUP_TRANSITION,
     VB_BE_NEAR_DOOR,
+    VB_SHOULD_QUICKSPIN,
 } GIVanillaBehavior;
 
 typedef enum {
@@ -245,6 +246,7 @@ typedef enum {
     GI_INVERT_CAMERA_RIGHT_STICK_Y,
     GI_INVERT_MOVEMENT_X,
     GI_INVERT_SHIELD_X,
+    GI_INVERT_SHIELD_Y,
     GI_INVERT_SHOP_X,
     GI_INVERT_HORSE_X,
     GI_INVERT_ZORA_SWIM_X,
