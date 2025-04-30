@@ -5323,12 +5323,13 @@ s32 func_808333CC(Player* this) {
         return false;
     }
 
+    iter = &this->unk_ADF[0];
+    iter2 = &sp3C[0];
+
     if (GameInteractor_Should(VB_SHOULD_QUICKSPIN, false, iter2, sp3C)) {
         return true;
     }
 
-    iter = &this->unk_ADF[0];
-    iter2 = &sp3C[0];
     for (i = 0; i < 4; i++, iter++, iter2++) {
         if ((*iter2 = *iter) < 0) {
             return false;
