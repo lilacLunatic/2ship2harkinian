@@ -1,5 +1,5 @@
 #ifndef BENMENU_H
-#define BENMNEU_H
+#define BENMENU_H
 
 #include "UIWidgets.hpp"
 #include "Menu.h"
@@ -121,16 +121,6 @@ class BenMenu : public Ship::Menu {
     void AddSettings();
     void AddEnhancements();
     void AddDevTools();
-
-  protected:
-    std::unordered_map<std::string, SidebarEntry> settingsSidebar;
-    std::vector<std::string> settingsOrder;
-    std::unordered_map<std::string, SidebarEntry> enhancementsSidebar;
-    std::vector<std::string> enhancementsOrder;
-    std::unordered_map<std::string, SidebarEntry> devToolsSidebar;
-    std::vector<std::string> devToolsOrder;
-    std::unordered_map<std::string, SidebarEntry> randoSidebar;
-    std::vector<std::string> randoOrder;
 };
 } // namespace BenGui
 

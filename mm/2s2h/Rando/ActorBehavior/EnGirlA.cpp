@@ -1,6 +1,7 @@
 #include "ActorBehavior.h"
 #include "public/bridge/consolevariablebridge.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
+#include "2s2h/Network/Anchor/Anchor.h"
 
 extern "C" {
 #include "variables.h"
@@ -9,7 +10,6 @@ extern "C" {
 #include "overlays/actors/ovl_En_Ossan/z_en_ossan.h"
 #include "overlays/actors/ovl_En_Sob1/z_en_sob1.h"
 #include "overlays/actors/ovl_En_Trt/z_en_trt.h"
-#include "2s2h/Network/Anchor/Anchor.h"
 
 void EnGirlA_Update2(EnGirlA* enGirlA, PlayState* play);
 void EnGirlA_DoNothing(EnGirlA* enGirlA, PlayState* play);

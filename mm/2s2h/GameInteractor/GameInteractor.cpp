@@ -337,12 +337,12 @@ int GameInteractor_InvertControl(GIInvertType type) {
             }
             break;
         case GI_INVERT_SHIELD_X:
-            if (CVarGetInteger("gEnhancements.Shield.InvertX", 0)) {
+            if (CVarGetInteger("gEnhancements.Equipment.InvertShieldX", 0)) {
                 result *= -1;
             }
             break;
         case GI_INVERT_SHIELD_Y:
-            if (CVarGetInteger("gEnhancements.Shield.InvertY", 1)) {
+            if (CVarGetInteger("gEnhancements.Equipment.InvertShieldY", 0)) {
                 result *= -1;
             }
             break;
