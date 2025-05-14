@@ -372,7 +372,7 @@ void BenMenu::AddSettings() {
     AddWidget(path, "Presets", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { PresetManager_Draw(); });
 
     path.sidebarName = "Network";
-    path.column = 1;
+    path.column = SECTION_COLUMN_1;
     AddSidebarEntry("Settings", "Network", 2);
     AddWidget(path, "Anchor", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { Anchor::Instance->DrawMenu(); });
 }
@@ -596,7 +596,7 @@ void BenMenu::AddEnhancements() {
                      .Min(0.1f)
                      .Max(3.0f));
 
-    path.column = 3;
+    path.column = SECTION_COLUMN_3;
     AddWidget(path, "Mouse", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Mouse Enabled", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Camera.Mouse.Enabled")
