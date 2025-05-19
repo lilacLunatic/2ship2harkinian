@@ -4,6 +4,7 @@
 #include "ShipInit.hpp"
 #include "GameInteractor/GameInteractor.h"
 #include "public/bridge/consolevariablebridge.h"
+#include <libultraship/libultraship.h>
 
 #define MOUSE_ENABLED (Ship::Context::GetInstance()->GetWindow()->IsMouseCaptured() && CVarGetInteger("gEnhancements.Camera.Mouse.Enabled", 0))
 
