@@ -1146,6 +1146,9 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Cutscenes.SkipMiscInteractions")
         .Options(CheckboxOptions().Tooltip(
             "Disclaimer: This doesn't do much yet, we will be progressively adding more skips over time."));
+    AddWidget(path, "Skip Enemy Cutscenes", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Cutscenes.SkipEnemyCutscenes")
+        .Options(CheckboxOptions().Tooltip("Skips cutscenes specific to enemies and boss battles."));
     AddWidget(path, "Skip Item Get Cutscene", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Cutscenes.SkipGetItemCutscenes")
         .Options(ComboboxOptions()

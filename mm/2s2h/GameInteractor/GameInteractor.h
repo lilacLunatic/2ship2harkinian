@@ -241,6 +241,9 @@ typedef enum {
     VB_BE_NEAR_DOOR,
     VB_SHOULD_QUICKSPIN,
     VB_LOAD_PLAYER_ANIMATION_FRAME,
+    VB_PLAYER_CUTSCENE_ACTION,
+    VB_SET_CAMERA_AT_EYE,
+    VB_SET_CAMERA_FOV,
 } GIVanillaBehavior;
 
 typedef enum {
