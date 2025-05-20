@@ -6691,6 +6691,11 @@ void func_80836888(Player* this, PlayState* play) {
 }
 
 void func_8083692C(Player* this, PlayState* play) {
+    if (Mouse_IsCaptured() && CVarGetInteger("gEnhancements.Camera.Mouse.Enabled", 0)) {
+        u32 width = OTRGetCurrentWidth();
+        u32 height = OTRGetCurrentHeight();
+        Mouse_SetCursorPos(width / 2, height / 2);
+    }
     Player_SetAction(play, this, Player_Action_3, 1);
     func_8082E438(play, this, func_8082ED20(this));
     this->currentYaw = this->actor.shape.rot.y;
@@ -9670,7 +9675,25 @@ s32 func_8083E514(Player* this, f32* arg2, s16* arg3, PlayState* play) {
         if (this->lockOnActor != NULL) {
             func_8083C62C(this, true);
         } else {
-            Math_SmoothStepToS(&this->actor.focus.rot.x, (sPlayerControlInput->rel.stick_y * 240.0f), 0xE, 0xFA0, 0x1E);
+            if (Mouse_IsCaptured() && CVarGetInteger("gEnhancements.Camera.Mouse.Enabled", 0)) {
+                MouseCoords mousePos = Mouse_GetPos();
+                MouseCoords mouseDelta = Mouse_GetDelta();
+                mousePos.y -= OTRGetCurrentHeight() / 2.0;
+
+                if (mouseDelta.y != 0) {
+                    mouseDelta.y = -mouseDelta.y * 1.0f *
+                                               CVarGetFloat("gEnhancements.Camera.FirstPerson.RightStickSensitivityY", 1.0f) *
+                                               -GameInteractor_InvertControl(GI_INVERT_FIRST_PERSON_RIGHT_STICK_Y);
+                }
+                if (sPlayerControlInput->rel.stick_y != 0 || mousePos.y == 0) {
+                    Math_SmoothStepToS(&this->actor.focus.rot.x, sPlayerControlInput->rel.stick_y * 240.0, 0xE, 0xFA0, 0x1E);
+                } else {
+                    this->actor.focus.rot.x += mouseDelta.y * 8;
+                    this->actor.focus.rot.x = CLAMP(this->actor.focus.rot.x, -60 * 240, 60 * 240);
+                }
+            } else {
+                Math_SmoothStepToS(&this->actor.focus.rot.x, sPlayerControlInput->rel.stick_y * 240.0, 0xE, 0xFA0, 0x1E);
+            }
             func_80832754(this, true);
         }
     } else {
