@@ -947,6 +947,10 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Equipment.ChuDrops")
         .Options(
             CheckboxOptions().Tooltip("When a bomb drop is spawned, it has a 50% chance to be a Bombchu instead."));
+    AddWidget(path, "Invert Shield X Axis", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Equipment.InvertShieldX")
+        .Options(CheckboxOptions().Tooltip(
+            "Invert the X axis while holding the shield."));
     AddWidget(path, "Invert Shield Y Axis", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Equipment.InvertShieldY")
         .Options(CheckboxOptions().Tooltip(
@@ -1917,4 +1921,21 @@ void BenMenu::Draw() {
 void BenMenu::DrawElement() {
     Ship::Menu::DrawElement();
 }
+
+void BenMenu::SetVisibility(bool visible) {
+    bool wasVisible = IsVisible();
+    Ship::Menu::SetVisibility(visible);
+
+    static bool captureBuffer = false;
+    if (wasVisible == visible) {
+        return;
+    }
+    std::shared_ptr<Ship::Window> window = Ship::Context::GetInstance()->GetWindow();
+    if (visible) {
+        captureBuffer = window->IsMouseCaptured();
+        window->SetMouseCapture(false);
+    } else {
+        window->SetMouseCapture(captureBuffer);
+    }
+};
 } // namespace BenGui

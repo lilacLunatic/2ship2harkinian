@@ -48,7 +48,7 @@
 #include "2s2h/BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
-#include "2s2h/Enhancements/Camera/Mouse.h"
+#include "2s2h/Enhancements/Controls/Mouse/Mouse.h"
 #include "public/bridge/consolevariablebridge.h"
 
 #define THIS ((Player*)thisx)
@@ -14979,8 +14979,8 @@ void Player_Action_18(Player* this, PlayState* play) {
         s16 var_a2;
         s16 var_a3;
 
-        xStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_X);
         yStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_Y);
+        xStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_X);
         var_a1 = (yStick * Math_CosS(temp_a0)) + (Math_SinS(temp_a0) * xStick);
         temp_ft5 = (xStick * Math_CosS(temp_a0)) - (Math_SinS(temp_a0) * yStick);
 
