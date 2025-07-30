@@ -1630,7 +1630,7 @@ void DrawFlagsTab() {
     static int16_t selectedScene = 0;
     if (selectedFlagSection == 5 || selectedFlagSection == 6) {
         ImGui::SameLine();
-        UIWidgets::Combobox("Scene", &selectedScene, sceneList,
+        UIWidgets::Combobox("Scene", &selectedScene, &sceneList,
                             {
                                 .alignment = UIWidgets::ComponentAlignment::Left,
                                 .labelPosition = UIWidgets::LabelPosition::None,
@@ -2139,7 +2139,7 @@ void DrawRandoTab() {
                                                    : UIWidgets::ColorValues.at(UIWidgets::Colors::White),
                            randoStaticCheck.name);
         ImGui::TableNextColumn();
-        UIWidgets::Combobox((hiddenName + "reward").c_str(), &randoSaveCheck.randoItemId, randoItemIdComboboxMap,
+        UIWidgets::Combobox((hiddenName + "reward").c_str(), &randoSaveCheck.randoItemId, &randoItemIdComboboxMap,
                             { .labelPosition = UIWidgets::LabelPosition::None });
         if (Anchor::Instance->roomState.teams.size() > 1) {
             ImGui::SameLine();
