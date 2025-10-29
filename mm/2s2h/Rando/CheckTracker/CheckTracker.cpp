@@ -5,6 +5,7 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/Rando/StaticData/StaticData.h"
 #include <cstring>
+#include "2s2h/Network/Anchor/Anchor.h"
 
 // Image Icons
 #include "assets/2s2h_assets.h"
@@ -14,6 +15,7 @@
 #include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"
 #include "assets/archives/schedule_dma_static/schedule_dma_static_yar.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
 
 extern "C" {
 s16 Play_GetOriginalSceneId(s16 sceneId);
@@ -69,6 +71,7 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_COW*/ gItemIconRomaniMaskTex,
     /*RCTYPE_CRATE*/ gCrateTrackerIcon,
     /*RCTYPE_FREESTANDING*/ gRupeeCounterIconTex,
+    /*RCTYPE_GRASS*/ gameplay_keep_Tex_053140,
     /*RCTYPE_HEART*/ gQuestIconPieceOfHeartTex,
     /*RCTYPE_MINIGAME*/ gArcheryScoreIconTex,
     /*RCTYPE_NPC*/ gItemIconBombersNotebookTex,
@@ -82,6 +85,8 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_STRAY_FAIRY*/ gStrayFairyGreatBayIconTex,
     /*RCTYPE_TINGLE_SHOP*/ gItemIconAdultsWalletTex,
 };
+
+static constexpr ImVec4 tintColor = {};
 
 std::string totalChecksFound() {
     std::string totalChecks;
@@ -109,7 +114,7 @@ void DrawCheckTypeIcon(RandoCheckId randoCheckId) {
                  : checkType == RCTYPE_OWL ? ImVec2(18.0f * trackerScale, 9.0f * trackerScale)
                                            : ImVec2(18.0f * trackerScale, 18.0f * trackerScale),
                  ImVec2(0, 0), ImVec2(1, 1),
-                 checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1));
+                 checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1), tintColor);
 }
 
 void initializeSceneChecks() {
@@ -262,6 +267,7 @@ void CheckTrackerDrawLogicalList() {
                                                                                   : IM_COL32(255, 255, 255, 0));
                             if (ImGui::IsItemClicked()) {
                                 randoSaveCheck.skipped = !randoSaveCheck.skipped;
+                                Anchor::Instance->SendPacket_SetCheckStatus(checkId);
                             }
                             ImGui::TableNextColumn();
                         }
@@ -432,6 +438,7 @@ void CheckTrackerDrawNonLogicalList() {
                                                                               : IM_COL32(255, 255, 255, 0));
                         if (ImGui::IsItemClicked()) {
                             randoSaveCheck.skipped = !randoSaveCheck.skipped;
+                            Anchor::Instance->SendPacket_SetCheckStatus(randoCheckId);
                         }
                         ImGui::TableNextColumn();
                     }

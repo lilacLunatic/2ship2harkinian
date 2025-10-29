@@ -32,6 +32,7 @@ s32 Ship_Random(s32 min, s32 max);
 
 #ifdef __cplusplus
 }
+bool isStringEmpty(std::string str);
 #endif
 
 #endif // SHIP_UTILS_H

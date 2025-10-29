@@ -11,7 +11,7 @@
 #include "2s2h/Rando/CheckTracker/CheckTracker.h"
 
 #ifdef __APPLE__
-#include "graphic/Fast3D/gfx_metal.h"
+#include "graphic/Fast3D/backends/gfx_metal.h"
 #endif
 
 #ifdef __SWITCH__
@@ -57,6 +57,10 @@ std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
 std::shared_ptr<ItemTrackerSettingsWindow> mItemTrackerSettingsWindow;
 std::shared_ptr<DisplayOverlayWindow> mDisplayOverlayWindow;
 
+UIWidgets::Colors GetMenuThemeColor() {
+    return mBenMenu->GetMenuThemeColor();
+}
+
 void SetupGuiElements() {
     auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
 
@@ -73,6 +77,7 @@ void SetupGuiElements() {
         gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Press - to access enhancements menu");
 #else
         gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Press F1 to access enhancements menu");
+        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Press F2 to toggle mouse cursor");
 #endif
     }
 

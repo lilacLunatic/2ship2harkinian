@@ -185,6 +185,10 @@ typedef enum {
     VB_ITEM_GIVE_SWORD_SET_FORM_EQUIP,
     VB_POT_DRAW_BE_OVERRIDDEN,
     VB_CRATE_DRAW_BE_OVERRIDDEN,
+    VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN,
+    VB_OBJGRASS_OPA_DRAW_BE_OVERRIDDEN,
+    VB_OBJGRASS_XLU_DRAW_BE_OVERRIDDEN,
+    VB_CARRY_GRASS_DRAW_BE_OVERRIDDEN,
     VB_HAVE_MAGIC_FOR_TINGLE,
     VB_GIVE_KEATON_MASK,
     VB_GIVE_LETTER_TO_MAMA,
@@ -219,6 +223,7 @@ typedef enum {
     VB_GIBDO_TRADE_SEQUENCE_TAKE_MORE_THAN_ONE_ITEM,
     VB_GIBDO_TRADE_SEQUENCE_DO_TRADE,
     VB_GET_ITEM_ACTION_FROM_MASK,
+    VB_GRASS_DROP_COLLECTIBLE,
     VB_GRANT_MAGIC_UPON_REQUEST,
     VB_SCOPENUTS_CONSIDER_FIRST_CYCLE,
     VB_JS_OVERRIDE_MASK_CHECK,
@@ -238,6 +243,10 @@ typedef enum {
     VB_START_JUMPSLASH,
     VB_SETUP_TRANSITION,
     VB_BE_NEAR_DOOR,
+    VB_SHOULD_QUICKSPIN,
+    VB_LOAD_PLAYER_ANIMATION_FRAME,
+    VB_PLAY_SCENE_SEQUENCE,
+    VB_DISABLE_ITEM_UNDERWATER_FLOOR,
 } GIVanillaBehavior;
 
 typedef enum {
@@ -695,12 +704,14 @@ void GameInteractor_ExecuteOnSaveLoad(s16 fileNum);
 void GameInteractor_ExecuteOnFileSelectSaveLoad(s16 fileNum, bool isOwlSave, SaveContext* saveContext);
 void GameInteractor_ExecuteBeforeEndOfCycleSave();
 void GameInteractor_ExecuteAfterEndOfCycleSave();
+void GameInteractor_ExecuteAfterOwlSave();
 void GameInteractor_ExecuteBeforeMoonCrashSaveReset();
 void GameInteractor_ExecuteOnInterfaceDrawStart();
 void GameInteractor_ExecuteAfterInterfaceClockDraw();
 void GameInteractor_ExecuteBeforeInterfaceClockDraw();
 
 void GameInteractor_ExecuteOnSceneInit(s16 sceneId, s8 spawnNum);
+void GameInteractor_ExecuteOnSceneSpawnActors();
 void GameInteractor_ExecuteOnRoomInit(s16 sceneId, s8 roomNum);
 void GameInteractor_ExecuteAfterRoomSceneCommands(s16 sceneId, s8 roomNum);
 void GameInteractor_ExecuteOnPlayDrawWorldEnd();
@@ -715,6 +726,7 @@ void GameInteractor_ExecuteOnActorDraw(Actor* actor);
 void GameInteractor_ExecuteOnActorKill(Actor* actor);
 void GameInteractor_ExecuteOnActorDestroy(Actor* actor);
 void GameInteractor_ExecuteOnPlayerPostLimbDraw(Player* player, s32 limbIndex);
+void GameInteractor_ExecuteOnPlayerSfx(u16 sfxId);
 
 void GameInteractor_ExecuteOnSceneFlagSet(s16 sceneId, FlagType flagType, u32 flag);
 void GameInteractor_ExecuteOnSceneFlagUnset(s16 sceneId, FlagType flagType, u32 flag);

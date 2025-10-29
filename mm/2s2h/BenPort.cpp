@@ -29,7 +29,7 @@
 #include "build.h"
 
 #include <Fast3D/interpreter.h>
-#include <Fast3D/gfx_rendering_api.h>
+#include <Fast3D/backends/gfx_rendering_api.h>
 
 #ifdef __APPLE__
 #include <SDL_scancode.h>
@@ -41,9 +41,11 @@
 //#include <functions.h>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#ifdef ENABLE_CROWD_CONTROL
-#include "Enhancements/crowd-control/CrowdControl.h"
-CrowdControl* CrowdControl::Instance;
+#ifdef ENABLE_NETWORKING
+#include "2s2h/Network/Sail.h"
+Sail* Sail::Instance;
+#include "2s2h/Network/Anchor/Anchor.h"
+Anchor* Anchor::Instance;
 #endif
 
 #include <libultraship/libultraship.h>
@@ -104,6 +106,7 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/resource/importer/TextureAnimationFactory.h"
 #include "2s2h/resource/importer/KeyFrameFactory.h"
 #include "window/gui/resource/Font.h"
+#include "window/FileDropMgr.h"
 #include "window/gui/resource/FontFactory.h"
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
 #include "BenGui/BenInputEditorWindow.h"
@@ -170,7 +173,7 @@ OTRGlobals::OTRGlobals() {
     std::unordered_set<uint32_t> validHashes = { MM_NTSC_US_10, MM_NTSC_US_GC };
 
     context = Ship::Context::CreateUninitializedInstance("2 Ship 2 Harkinian", appShortName, "2ship2harkinian.json");
-
+    context->InitFileDropMgr();
     context->InitLogging();
     context->InitGfxDebugger();
     context->InitConfiguration();
@@ -338,13 +341,16 @@ ImFont* OTRGlobals::CreateFontWithSize(float size, std::string fontPath) {
         font = mImGuiIo->Fonts->AddFontDefault(&fontCfg);
     } else {
         auto initData = std::make_shared<Ship::ResourceInitData>();
+        ImFontConfig config;
+        config.FontDataOwnedByAtlas = false;
+
         initData->Format = RESOURCE_FORMAT_BINARY;
         initData->Type = static_cast<uint32_t>(RESOURCE_TYPE_FONT);
         initData->ResourceVersion = 0;
         initData->Path = fontPath;
         std::shared_ptr<Ship::Font> fontData = std::static_pointer_cast<Ship::Font>(
             Ship::Context::GetInstance()->GetResourceManager()->LoadResource(fontPath, false, initData));
-        font = mImGuiIo->Fonts->AddFontFromMemoryTTF(fontData->Data, fontData->DataSize, size);
+        font = mImGuiIo->Fonts->AddFontFromMemoryTTF(fontData->Data, fontData->DataSize, size, &config);
     }
     // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
     float iconFontSize = size * 2.0f / 3.0f;
@@ -467,7 +473,7 @@ extern "C" void OTRExtScanner() {
     }
 }
 
-void Ben_ProcessDroppedFiles(std::string filePath) {
+void Ben_ProcessDroppedFiles(const std::string& filePath) {
     SPDLOG_INFO("Processing dropped file: {}", filePath);
 
     bool handled = false;
@@ -509,7 +515,12 @@ ArchiveVersion ReadPortVersionFromArchive(std::string archivePath, bool isO2rTyp
     if (isO2rType) {
         archive = make_shared<Ship::O2rArchive>(archivePath);
     } else {
+#ifdef INCLUDE_MPQ_SUPPORT
         archive = make_shared<Ship::OtrArchive>(archivePath);
+#else
+        SPDLOG_ERROR("An OTR File, {}, was found but support for them is not included. File will be ignored.",
+                     archivePath.c_str());
+#endif
     }
     if (archive->Open()) {
         auto t = archive->LoadFile("portVersion");
@@ -522,7 +533,6 @@ ArchiveVersion ReadPortVersionFromArchive(std::string archivePath, bool isO2rTyp
             version.minor = reader->ReadUInt16();
             version.patch = reader->ReadUInt16();
         }
-        archive->Close();
     }
 
     return version;
@@ -716,7 +726,13 @@ extern "C" void InitOTR() {
     OTRGlobals::Instance = new OTRGlobals();
     GameInteractor::Instance = new GameInteractor();
     AudioCollection::Instance = new AudioCollection();
+#ifdef ENABLE_NETWORKING
+    Sail::Instance = new Sail();
+    Anchor::Instance = new Anchor();
+#endif
+
     LoadGuiTextures();
+
     BenGui::SetupGuiElements();
     ShipInit::InitAll();
     InitEnhancements();
@@ -731,6 +747,10 @@ extern "C" void InitOTR() {
     OTRAudio_Init();
     OTRExtScanner();
 
+    // Just came up with arbitrary numbers that seemed to work, this is
+    // usually set once(?) in currently stubbed out areas of code.
+    gIrqMgrRetraceTime = Ship_Random(700000, 850000);
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnFileDropped>(Ben_ProcessDroppedFiles);
 
     time_t now = time(NULL);
@@ -742,13 +762,13 @@ extern "C" void InitOTR() {
     }
 
     srand(now);
-#ifdef ENABLE_CROWD_CONTROL
-    CrowdControl::Instance = new CrowdControl();
-    CrowdControl::Instance->Init();
-    if (CVarGetInteger("gCrowdControl", 0)) {
-        CrowdControl::Instance->Enable();
-    } else {
-        CrowdControl::Instance->Disable();
+#ifdef ENABLE_NETWORKING
+    SDLNet_Init();
+    if (CVarGetInteger("gNetwork.Sail.Enabled", 0)) {
+        Sail::Instance->Enable();
+    }
+    if (CVarGetInteger("gNetwork.Anchor.Enabled", 0)) {
+        Anchor::Instance->Enable();
     }
 #endif
 
@@ -762,9 +782,14 @@ extern "C" void SaveManager_ThreadPoolWait() {
 extern "C" void DeinitOTR() {
     SaveManager_ThreadPoolWait();
     OTRAudio_Exit();
-#ifdef ENABLE_CROWD_CONTROL
-    CrowdControl::Instance->Disable();
-    CrowdControl::Instance->Shutdown();
+#ifdef ENABLE_NETWORKING
+    if (CVarGetInteger("gNetwork.Sail.Enabled", 0)) {
+        Sail::Instance->Disable();
+    }
+    if (CVarGetInteger("gNetwork.Anchor.Enabled", 0)) {
+        Anchor::Instance->Disable();
+    }
+    SDLNet_Quit();
 #endif
 
     // Destroying gui here because we have shared ptrs to LUS objects which output to SPDLOG which is destroyed before
@@ -904,14 +929,13 @@ extern "C" void Graph_StartFrame() {
         }
     }
 #endif
-
-    if (CVarGetInteger(CVAR_NEW_FILE_DROPPED, 0)) {
-        std::string filePath = CVarGetString(CVAR_DROPPED_FILE, "");
+    auto dropMgr = Ship::Context::GetInstance()->GetFileDropMgr();
+    if (dropMgr->FileDropped()) {
+        std::string filePath = dropMgr->GetDroppedFile();
         if (!filePath.empty()) {
             GameInteractor::Instance->ExecuteHooks<GameInteractor::OnFileDropped>(filePath);
         }
-        CVarClear(CVAR_NEW_FILE_DROPPED);
-        CVarClear(CVAR_DROPPED_FILE);
+        dropMgr->ClearDroppedFile();
     }
 }
 
